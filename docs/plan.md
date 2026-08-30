@@ -20,7 +20,7 @@ See `docs/assignment.md` for the full brief. Grading strategy:
 
 ## 3. Team
 
-Group of 5: 3 steady contributors, 2 intermittent. No further workflow process defined here — this doc covers product/architecture decisions, not task assignment.
+Group of 5. No further workflow process defined here — this doc covers product/architecture decisions, not task assignment; see `docs/team-workflow.md`.
 
 ## 4. Tech stack
 
