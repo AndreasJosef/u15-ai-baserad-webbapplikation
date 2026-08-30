@@ -11,3 +11,7 @@ Default label vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `read
 ### Domain docs
 
 Single-context layout (`CONTEXT.md` + `docs/adr/` at the repo root). See `docs/agents/domain.md`.
+
+### Team workflow
+
+How grilling, to-spec, to-tickets, implement, diagnosing-bugs, and triage compose into a multi-person process for this team: who needs to be in the room for which decisions, how tickets are claimed, and review/merge gates. See `docs/team-workflow.md`.

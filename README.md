@@ -2,7 +2,7 @@
 
 An AI-based web app built for the u15 group assignment. It generalizes the discipline of a relentless, branching interview — the kind you'd use to turn a fuzzy coding idea into a concrete plan — into daily life: bring a vague feeling about a personal project, and the app drills with you until it's a defined project broken into concrete tasks in your Todoist.
 
-> Assignment brief: `docs/assignment.md`. Full design/architecture plan: `docs/plan.md`. Stack research notes: `docs/research.md`.
+> Assignment brief: `docs/assignment.md`. Full design/architecture plan: `docs/plan.md`. Stack research notes: `docs/research.md`. How we work as a team: `docs/team-workflow.md`.
 
 ## Status
 
