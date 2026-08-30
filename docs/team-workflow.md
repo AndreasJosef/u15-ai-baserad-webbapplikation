@@ -35,7 +35,7 @@ The skill chain stays the same one you'd use solo: `grilling` → `to-spec` → 
 - Open a PR **into `dev`**. **At least one teammate other than the driver reviews and approves** before merge — this is also where the rotation/exposure from §3 happens for free, since reviewing a PR is the cheapest way to see code you didn't write.
 - **CI must be green before merge** (`.github/workflows/ci.yml`: typecheck + test). It has nothing to run against yet — the first scaffolding ticket needs to add `typecheck` and `test` npm scripts. Until then, CI failing is expected and correct; don't merge around it, add the scripts.
 - Merge into `dev` once approved and green.
-- **These two gates (green CI, one approval) are a team norm, not a GitHub-enforced one.** The repo is private, and GitHub only enforces branch protection / rulesets on a private repo with a paid plan or by making the repo public — neither of which we've done. Nothing physically stops a merge that skips them; don't skip them anyway. Revisit enforcing this for real if the repo ever goes public or someone's on GitHub Pro.
+- **These two gates are GitHub-enforced, not just a norm.** The repo is public, and `dev` has branch protection: the `check` CI job must pass against an up-to-date branch, and at least 1 approving review is required, before GitHub will allow the merge button to be pressed at all.
 - **Promoting `dev` to `main`**: whenever `dev` is in a good, demoable state — a natural checkpoint, not after every single ticket — open a `dev` → `main` PR to promote it, which is what actually goes live. Anyone can propose the promotion; it doesn't need an owner. Before the Sep 11 oral defense, `main` must be promoted and verified working, not just `dev`.
 
 ## 6. Bugs
