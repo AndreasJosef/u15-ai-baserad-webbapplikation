@@ -29,11 +29,13 @@ The skill chain stays the same one you'd use solo: `grilling` → `to-spec` → 
 
 ## 5. From ticket to merged code
 
-- One branch per ticket, off `main`.
+- **`main` is always deployable.** Vercel deploys production from it, so nothing lands on `main` that hasn't already been integrated and working on `dev`. `dev` is the shared integration branch tickets land on day to day.
+- One branch per ticket, off `dev`.
 - Run `/implement` on the claimed ticket. TDD at pre-agreed seams and the `/code-review` pass both happen automatically as part of that skill — don't add a separate manual pre-review layer on top, that's already the skill's own final step.
-- Open a PR. **At least one teammate other than the driver reviews and approves** before merge — this is also where the rotation/exposure from §3 happens for free, since reviewing a PR is the cheapest way to see code you didn't write.
+- Open a PR **into `dev`**. **At least one teammate other than the driver reviews and approves** before merge — this is also where the rotation/exposure from §3 happens for free, since reviewing a PR is the cheapest way to see code you didn't write.
 - **CI must be green before merge** (`.github/workflows/ci.yml`: typecheck + test). It has nothing to run against yet — the first scaffolding ticket needs to add `typecheck` and `test` npm scripts. Until then, CI failing is expected and correct; don't merge around it, add the scripts.
-- Merge straight to `main` once approved and green. No long-lived integration branch — tickets are small enough that trunk stays shippable ticket by ticket.
+- Merge into `dev` once approved and green.
+- **Promoting `dev` to `main`**: whenever `dev` is in a good, demoable state — a natural checkpoint, not after every single ticket — open a `dev` → `main` PR to promote it, which is what actually goes live. Anyone can propose the promotion; it doesn't need an owner. Before the Sep 11 oral defense, `main` must be promoted and verified working, not just `dev`.
 
 ## 6. Bugs
 
