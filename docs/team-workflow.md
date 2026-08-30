@@ -29,12 +29,13 @@ The skill chain stays the same one you'd use solo: `grilling` → `to-spec` → 
 
 ## 5. From ticket to merged code
 
-- **`main` is always deployable.** Vercel deploys production from it, so nothing lands on `main` that hasn't already been integrated and working on `dev`. `dev` is the shared integration branch tickets land on day to day.
+- **`main` is always deployable.** Vercel deploys production from it, so nothing lands on `main` that hasn't already been integrated and working on `dev`. `dev` is the shared integration branch tickets land on day to day, and it's the repo's **default branch** — new clones and PRs point there, not `main`.
 - One branch per ticket, off `dev`.
 - Run `/implement` on the claimed ticket. TDD at pre-agreed seams and the `/code-review` pass both happen automatically as part of that skill — don't add a separate manual pre-review layer on top, that's already the skill's own final step.
 - Open a PR **into `dev`**. **At least one teammate other than the driver reviews and approves** before merge — this is also where the rotation/exposure from §3 happens for free, since reviewing a PR is the cheapest way to see code you didn't write.
 - **CI must be green before merge** (`.github/workflows/ci.yml`: typecheck + test). It has nothing to run against yet — the first scaffolding ticket needs to add `typecheck` and `test` npm scripts. Until then, CI failing is expected and correct; don't merge around it, add the scripts.
 - Merge into `dev` once approved and green.
+- **These two gates (green CI, one approval) are a team norm, not a GitHub-enforced one.** The repo is private, and GitHub only enforces branch protection / rulesets on a private repo with a paid plan or by making the repo public — neither of which we've done. Nothing physically stops a merge that skips them; don't skip them anyway. Revisit enforcing this for real if the repo ever goes public or someone's on GitHub Pro.
 - **Promoting `dev` to `main`**: whenever `dev` is in a good, demoable state — a natural checkpoint, not after every single ticket — open a `dev` → `main` PR to promote it, which is what actually goes live. Anyone can propose the promotion; it doesn't need an owner. Before the Sep 11 oral defense, `main` must be promoted and verified working, not just `dev`.
 
 ## 6. Bugs
