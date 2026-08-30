@@ -1,6 +1,6 @@
 # Team workflow
 
-Status: agreed by the team on 2026-08-30, via a `/grilling` session. Update it as the process changes rather than letting it drift out of sync with how you actually work.
+Status: drafted via a `/grilling` session on 2026-08-30 — not yet agreed by the team. Getting the team to actually agree on this doc (amend it, argue with it, ratify it) is a good candidate for one of the first practice issues, exercising the grilling → to-spec → to-tickets loop on the process itself before using it on the product. Update it as the process changes rather than letting it drift out of sync with how you actually work.
 
 This covers **how the five of us work together** day to day: who's in the room for which decisions, how work moves from a vague idea to merged code, and how bugs get handled. It complements `docs/plan.md` (product/architecture decisions, already settled) and the tracker docs in `docs/agents/` (mechanics an agent needs — issue tracker conventions, triage labels, domain doc layout). This doc is written for this project specifically, not as a generic template — lift from it later if it proves out.
 
@@ -12,19 +12,19 @@ The skill chain stays the same one you'd use solo: `grilling` → `to-spec` → 
 
 - **Architecture-level / high-stakes decisions** (the kind already captured in `docs/plan.md`): a live mob session, whole team or as close to it as you can get. One person drives the CLI, everyone weighs in.
 - **Feature-level specs** (the normal case as the project progresses): **paired grilling** — at least two teammates live, any two, it doesn't need to be a specific role. The pair runs `grilling` together straight into `to-spec` and `to-tickets`. The pairing *is* the sign-off — having a second live voice pushing back is what a solo session can't get from itself, so don't bolt an async approval on top of it; that just re-adds the latency pairing was meant to avoid.
-- **Solo fallback**: if genuinely nobody else is free, grilling alone is allowed, but the resulting spec then needs an explicit async approval — a comment or reaction from one steady contributor — before `to-tickets` runs. This is the exception path, not the default; use it when it's true, not as a shortcut around finding a second person.
+- **Solo fallback**: if genuinely nobody else is free, grilling alone is allowed, but the resulting spec then needs an explicit async approval — a comment or reaction from another teammate — before `to-tickets` runs. This is the exception path, not the default; use it when it's true, not as a shortcut around finding a second person.
 - **Trivial work** (a bug, a small well-understood change) skips grilling and `to-spec` entirely and goes straight to a ticket — see §6 for bugs, and use the same judgment for tiny enhancements: if there's nothing to actually decide, don't manufacture a grilling session for it.
 
 ## 3. Ticket splitting & the shared queue
 
-- When running `to-tickets`, treat the blocking edges as a lever for **parallelism**, not just correctness. Aim for a frontier of roughly **2–3 simultaneously startable tickets** at a time, matching the 3 steady contributors — don't just take whatever vertical-slice decomposition falls out by default if a wider cut is available without sacrificing the tracer-bullet rules.
+- When running `to-tickets`, treat the blocking edges as a lever for **parallelism**, not just correctness. Aim for a frontier of roughly **2–3 simultaneously startable tickets** at a time, matching how many of you are likely to be driving agents at once — don't just take whatever vertical-slice decomposition falls out by default if a wider cut is available without sacrificing the tracer-bullet rules.
 - Tickets are **claimed, not owned**: `ready-for-agent` issues sit in one shared queue on the tracker. Whoever's next available claims one — `gh issue edit <n> --add-assignee @me`, before starting anything, same convention `/wayfinder` uses — purely to stop two people's agents grabbing the same ticket. It is not a sprint assignment; nobody "owns" an area of the ticket queue.
 - **Usage budget**: no tracking spreadsheet. Before claiming, do a quick gut-check on your own remaining agent usage for the session, and bias toward a smaller ticket if you're running low. Whoever has headroom takes more or bigger tickets. This is a norm, not infrastructure.
 - **Rotation**: nobody should reach the Sep 11 oral defense never having driven a ticket outside one area of the stack (auth, the LLM interview, Todoist integration, UI). Not mechanically enforced — raise it at the standing sync (§4) if the queue looks like it's skewing into silos.
 
 ## 4. Cadence
 
-- **Fixed floor**: a short sync every 2–3 days, to catch drift and keep the 2 intermittent contributors oriented. This is not a status-update standup — the bottleneck on a 2-week project is decision moments, not who-did-what.
+- **Fixed floor**: a short sync every 2–3 days, to catch drift and keep everyone oriented, since not everyone will be online every day. This is not a status-update standup — the bottleneck on a 2-week project is decision moments, not who-did-what.
 - **Everything else is event-triggered**: grill together when a spec-sized decision is ready, review together when a PR is up, pull in whoever's needed the moment something's blocked. Don't force a daily ritual onto a project this short.
 
 ## 5. From ticket to merged code
@@ -46,7 +46,7 @@ The skill chain stays the same one you'd use solo: `grilling` → `to-spec` → 
 
 ## 7. Handoff
 
-With 2 intermittent contributors, someone will start a ticket and need to step away before it's done. Before signing off mid-ticket, leave a one-paragraph comment on the issue describing state and next step. For anything meatier, run `/handoff` and link the resulting doc from that comment instead of retyping it. Most of the time there's nothing to hand off, since tickets are sized to one context window — but that's a judgment made on the way out, not an assumption.
+Since not everyone will always be available, someone will inevitably start a ticket and need to step away before it's done. Before signing off mid-ticket, leave a one-paragraph comment on the issue describing state and next step. For anything meatier, run `/handoff` and link the resulting doc from that comment instead of retyping it. Most of the time there's nothing to hand off, since tickets are sized to one context window — but that's a judgment made on the way out, not an assumption.
 
 ## 8. Explicitly out of scope
 
