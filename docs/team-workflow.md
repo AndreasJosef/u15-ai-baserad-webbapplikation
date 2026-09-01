@@ -52,10 +52,23 @@ Since not everyone will always be available, someone will inevitably start a tic
 
 The "agent ledger" idea sketched in `ideas.md` (a shared lock/mutex layer so concurrent agents can't collide on the same files) is **not** part of this project's workflow. Tracer-bullet ticket slicing already minimizes file overlap by design, at most 3 people run agents concurrently, and building a coordination ledger is itself a project — don't spend the two weeks we have solving that instead of the assignment. Worth revisiting for a bigger, longer-running effort later.
 
-## 9. Where things live
+## 9. Milestones
+
+- A milestone marks a **chapter closing** — a mid-flight "arrived somewhere" moment, and/or a native tracker record of an externally-imposed deadline — not the end of the project, and not in tension with the ongoing grilling → to-spec → to-tickets → implement loop.
+- **Define one milestone at a time.** Don't chart the whole sequence (the one after this one, and the one after that) up front — that's guessing at problems the project hasn't hit yet. Define the next one once the current one is reached or clearly in sight.
+- **Prefer criteria-driven completion over a bare date**, where the date isn't externally fixed — the description's done-criteria are what actually disciplines whether it's reached. Where the date *is* externally fixed (as with this project's own deadline), record it too, but it doesn't replace the criteria.
+- **Tracked as a GitHub Milestone**, issues attached to it as they're created through the normal ticket flow — not a separate planning doc that can drift out of sync with the tracker. Mechanics: `docs/agents/milestones.md`.
+- **Rationale lives in the milestone's own description field**, not an ADR — ADRs are reserved for decisions about how the product itself is built, not roadmap/process decisions about it.
+- **Decoupled from promoting `dev` → `main`** (§5): a milestone (tracker bookkeeping — issues attached, description with rationale) and a promotion (a deploy action) are different kinds of events that may or may not coincide. Don't make one wait on the other.
+- **Who decides**: defining or closing a milestone is an architecture-level decision (§2) — a whole-team mob call, since it re-points everyone's priority for a while, not a single feature spec one pair can settle alone.
+
+First milestone: **"Submission"** — see it on the tracker for its done-criteria. Filed solo on 2026-09-01, not yet reviewed by the rest of the team.
+
+## 10. Where things live
 
 - Tracker mechanics (creating/reading/labelling issues): `docs/agents/issue-tracker.md`.
 - Triage label vocabulary: `docs/agents/triage-labels.md`.
 - Domain docs (`CONTEXT.md`, ADRs — created lazily as terms/decisions land): `docs/agents/domain.md`.
+- Milestone mechanics: `docs/agents/milestones.md`.
 - Product/architecture decisions: `docs/plan.md`.
 - This doc: the team-facing process that ties those together. Read it alongside `docs/plan.md`, not instead of it.
