@@ -2,7 +2,7 @@
 
 Working name: TBD.
 
-Status: captured via a `/grilling` session on 2026-09-01, on branch `grilling/lia-cv-matcher` — a teammate's proposal (raw capture in `ideas.md`) grilled to spec-depth as an **alternative to `docs/plan.md`** (the currently agreed plan), for comparison at a whole-team mob session per `docs/team-workflow.md` §2. This session was solo (one driver; the idea's originator wasn't live in the room), and the normal pairing/async-approval sign-off doesn't apply here because this doc isn't headed into `to-tickets` — it exists to be decided *between*, not committed to, by the whole team. Nothing here is adopted, and nothing in `docs/plan.md` is superseded by it.
+Status: captured via a `/grilling` session on 2026-09-01, on branch `grilling/lia-cv-matcher` — a teammate's proposal (raw capture in `ideas.md`) grilled to spec-depth as an **alternative to `docs/plan.md`** (the currently agreed plan), for comparison at a whole-team mob session per `docs/team-workflow.md` §2. This session was solo (one driver; the idea's originator wasn't live in the room), and the normal pairing/async-approval sign-off doesn't apply here because this doc isn't headed into `to-tickets` — it exists to be decided *between*, not committed to, by the whole team. Nothing here is adopted, and nothing in `docs/plan.md` is superseded by it. Followed on 2026-09-01 by a solo `/wayfinder` pass closing out this doc's own open items (§6, §12) to make it decision-ready; that pass still doesn't decide adoption.
 
 ## 1. Vision
 
@@ -30,9 +30,9 @@ Form/dashboard, not conversational: structured search fields plus a paste-CV box
 
 ## 6. Job-ad sourcing
 
-- `search_job_ads` — a real tool call against the free [JobTech Dev JobSearch API](https://jobsearch.api.jobtechdev.se/) (Arbetsförmedlingen's Platsbanken). Uses broad occupation/keyword search rather than the API's narrow `trainee` filter, since literal LIA-tagged ads are scarce in practice — `compare_match` (§7) does the actual suitability judgment regardless of formal tagging.
+- `search_job_ads` — a real tool call against the free [JobTech Dev JobSearch API](https://jobsearch.api.jobtechdev.se/) (Arbetsförmedlingen's Platsbanken). Uses broad occupation/keyword search rather than the API's narrow `trainee` filter as the primary path, since literal LIA-tagged ads are scarce in practice — `compare_match` (§7) does the actual suitability judgment regardless of formal tagging. The API also exposes a dedicated `trainee` boolean and a `larling` (apprenticeship) filter, plus `experience` (no-experience-required); confirmed available (see `docs/research.md` §4) as a possible narrow supplementary filter later, but broad search stays primary per this section's original reasoning.
 - Manual paste is kept as a fallback input path for ads the API doesn't carry (e.g. a company's own careers page).
-- No API key appears to be required for this API; worth a final confirmation against its docs at implementation time, not a design blocker.
+- **Confirmed** (see `docs/research.md` §4): the `/search` endpoint is open/anonymous in live use, with no published rate-limit threshold (only a generic `429` on unspecified overuse), and ad data is CC0-licensed — no restriction on storing ad content or generating/storing embeddings from it, which §8's ranking and the `save_ad` stretch item (§10) both depend on. One residual risk carried into §12: the API's own getting-started doc still claims a key is required, contradicting live behavior.
 
 ## 7. Core comparison
 
@@ -70,6 +70,7 @@ For the assignment's VG bar: one real external-API tool call (`search_job_ads`),
 
 ## 12. Open items / risks
 
-- JobTech Dev API auth/rate-limit specifics unverified beyond a quick doc check during this session — confirm before building §6.
-- No app name chosen.
+- ~~JobTech Dev API auth/rate-limit specifics unverified~~ — resolved by research, see `docs/research.md` §4 and §6 above. Two residual risks to keep an eye on, neither a design blocker: (a) the API's getting-started doc still claims a key is required despite the live endpoint being anonymous — if that ever gets enforced, budget days not hours, since the archived key-request process had no published turnaround; (b) an older 2019 Terms-of-Use PDF named CC-BY-SA instead of the current CC0 license — re-check `swagger.json`'s license block close to submission rather than trusting this note indefinitely.
+- No app name chosen — **deliberately left out of scope** rather than an open item to resolve: `docs/plan.md` is equally still "TBD" on naming, and picking a name before the team has picked *between* the two pitches would be premature busywork.
 - Whether the team picks this over `docs/plan.md` is undecided — see status line above.
+- The repo's only GitHub Milestone ("Submission," filed 2026-09-01) has its done-criteria written entirely against `docs/plan.md`'s §10 MVP checklist, with no mention of this pitch. Not actionable now — rewriting it is itself an architecture-level, whole-team call per `docs/team-workflow.md` §9, and it's gated on the adoption decision above — but flagged here so a future reader doesn't assume the milestone already covers whichever pitch wins.
