@@ -8,6 +8,8 @@ This covers **how the five of us work together** day to day: who's in the room f
 
 The skill chain stays the same one used solo: `grilling` → `to-spec` → `to-tickets` → `implement` (which runs `/code-review` and TDD internally) → merge. `diagnosing-bugs` and `triage` sit alongside it for anything that isn't new work. What changes for a team of five is **who's present for which step**, not the steps themselves — implementation is agent-driven and fast enough that splitting it across people doesn't buy us anything; the actual coordination problem is upstream, in the decisions.
 
+`CONTEXT.md`/ADRs are normally seeded as a side effect of the `grilling` step itself (see §10). When a spec-sized decision reaches `to-spec` without having gone through that interview — an already-agreed plan doc, or a decision resolved via a mob session or `/wayfinder` rather than a live grilling pass — run a standalone `/domain-modeling` pass first to seed `CONTEXT.md`/ADRs before handing the plan to `to-spec`. This is lighter than a full grilling session — it only resolves vocabulary and hard-to-reverse decisions, not the product decisions themselves — but skipping it means the glossary silently never gets built just because the interview step was bypassed.
+
 ## 2. Decision-making: who has to be in the room
 
 - **Architecture-level / high-stakes decisions** (the kind already captured in `docs/plan.md`): a live mob session, whole team or as close to it as we can get. One person drives the CLI, everyone weighs in.
@@ -68,7 +70,7 @@ First milestone: **"Submission"** — see it on the tracker for its done-criteri
 
 - Tracker mechanics (creating/reading/labelling issues): `docs/agents/issue-tracker.md`.
 - Triage label vocabulary: `docs/agents/triage-labels.md`.
-- Domain docs (`CONTEXT.md`, ADRs — created lazily as terms/decisions land): `docs/agents/domain.md`.
+- Domain docs (`CONTEXT.md`, ADRs — created lazily as terms/decisions land, or via a standalone `/domain-modeling` pass per §1): `docs/agents/domain.md`.
 - Milestone mechanics: `docs/agents/milestones.md`.
 - Product/architecture decisions: `docs/plan.md`.
 - This doc: the team-facing process that ties those together. Read it alongside `docs/plan.md`, not instead of it.
