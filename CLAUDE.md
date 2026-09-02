@@ -18,4 +18,4 @@ How grilling, to-spec, to-tickets, implement, diagnosing-bugs, and triage compos
 
 ### Milestones
 
-Chapter-closing checkpoints (an internal "arrived somewhere" moment, or an externally-imposed deadline), tracked as GitHub Milestones with issues attached via the normal ticket flow, one milestone defined at a time. See `docs/agents/milestones.md` and `docs/team-workflow.md` §9.
+Chapter-closing checkpoints (an internal "arrived somewhere" moment, or an externally-imposed deadline) — the root position in the spec fractal, not a separate GitHub Milestone object, one defined at a time. See `docs/agents/milestones.md` and `docs/team-workflow.md` §9.
