@@ -1,6 +1,6 @@
 # Project plan
 
-Working name: **TBD** (search-replace once the team picks one).
+Working name: **Hone** (placeholder — search-replace if the team lands on something else).
 
 Status: design agreed, no code written yet. This doc is the shared understanding reached during planning on 2026-08-30 — update it as decisions change rather than letting it drift out of sync with reality.
 
@@ -29,7 +29,8 @@ Group of 5. No further workflow process defined here — this doc covers product
 | Frontend/full-stack framework | TanStack Start (RC), TypeScript | "Big language" per assignment tip; server functions keep the OpenRouter key off the client; see `docs/research.md` |
 | Hosting | Vercel | Officially auto-detected for TanStack Start, lowest-friction path to a public demo URL |
 | Database | Supabase (Postgres) | Backs accounts, Todoist tokens, and interview history |
-| Auth | Better Auth (or equivalent) on top of Supabase Postgres | Real per-user accounts, since implementation is agent-driven this is affordable to build properly |
+| Auth | Better Auth, tables unified into the same Supabase Postgres schema as the app's own tables; email+password only for MVP | Real per-user accounts; ADR-0001 covers why Better Auth over Supabase Auth's RLS-based approach |
+| UI / styling | Tailwind CSS + shadcn/ui | Fastest path to a consistent look with 5 people touching UI code independently |
 | LLM gateway | OpenRouter | One integration surface, model-swappable via env var |
 | Primary model | `anthropic/claude-sonnet-4.6` | Interview quality is an explicit priority; cost is trivial at our volume (see `docs/research.md`) |
 | Dev/cheap model | `google/gemini-2.5-flash` | Swap in via env var for cheap iteration during development |
@@ -80,6 +81,7 @@ Storing full transcripts (not just final breakdowns) is a deliberate choice made
 - Confirm → `create_todoist_tasks` → real tasks appear in the user's Todoist.
 - History view listing past sessions (transcript + resulting breakdown).
 - A deliberately well-crafted system prompt, not a generic chatbot wrapper.
+- **Error-handling bar**: no silent failures — the user always sees that something went wrong and can retry — but no retry/backoff logic, offline handling, or polished empty/error-state design. Keeps every ticket's effort consistent given the 8-day runway.
 
 ## 11. Stretch backlog (only if time remains after MVP)
 
