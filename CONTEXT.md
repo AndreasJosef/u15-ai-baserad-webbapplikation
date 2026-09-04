@@ -6,7 +6,11 @@ An app that turns a vague idea ("I should sort out the garage") into concrete To
 
 **Interview**:
 The multi-turn, one-question-at-a-time conversation between the user and the app that turns a vague idea into a Task Breakdown. Spans the Defining and Drilling Phases (see Phase), separated by a Checkpoint, and ends once `propose_task_breakdown` fires and the Session moves into the Proposed Phase.
-_Avoid_: chat, session (a Session is the broader technical/persistence concept; an Interview is what happens *within* one)
+_Avoid_: chat, session (see Session below — an Interview is what happens *within* one, not the persisted row itself)
+
+**Session**:
+The persisted row an Interview happens within: one `interview_sessions` table row per Interview, holding the cached `project_summary`/`project_title` set at Checkpoint/proposal time and the resulting `todoist_project_id` once Completed, plus (via a separate `messages` table) the full transcript that Phase is derived from. Interview names the conversation; Session names its row in the database.
+_Avoid_: interview session (redundant — "Session" already implies "of an Interview"), chat session
 
 **Checkpoint**:
 The conversational transition point inside an Interview where the app confirms its read of the project ("Sounds like the project is: X — let's break that into steps") before shifting from the Defining Phase to the Drilling Phase. Implemented as `mark_checkpoint`, a model-initiated tool call with no Todoist side effect and no dedicated UI screen — invisible to the user as a distinct step, even though it is a real tool call under the hood. Its `project_summary` argument also drives a small persistent hint shown in the UI once it fires.

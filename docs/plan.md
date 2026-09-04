@@ -69,10 +69,12 @@ Between the two tool calls, the user sees a **fully editable** table of the prop
 
 Supabase stores:
 - User accounts (via Better Auth or equivalent).
-- Each user's Todoist personal API token.
+- Each user's Todoist personal API token, encrypted at rest (application-level AES-256-GCM, not a DB-native extension — see `docs/adr/0002-application-level-token-encryption.md`).
 - **Full interview transcripts** (every Q&A turn, not just the final result) plus the resulting task breakdown, per session — surfaced as a history/dashboard.
 
 Storing full transcripts (not just final breakdowns) is a deliberate choice made now, even though the features it enables are stretch/backlog — retrofitting capture later would mean losing all data from before the retrofit.
+
+Concrete table layout (`interview_sessions`, `messages`, `tasks`, Better Auth's own tables plus `user.todoistToken`) settled during issue #6's grilling — see that issue's resolution comment and `CONTEXT.md`'s Session entry.
 
 ## 10. MVP scope (target: presentable by Sep 11)
 
