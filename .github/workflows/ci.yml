@@ -14,9 +14,6 @@ jobs:
         with:
           node-version: lts/*
 
-      # NOTE: fails until the app's first scaffolding ticket adds a package.json
-      # with `typecheck` and `test` npm scripts. That failure is expected and
-      # correct until then — see docs/team-workflow.md §5.
       - run: npm ci
       - run: npm run typecheck
       - run: npm test

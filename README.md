@@ -6,7 +6,7 @@ An AI-based web app built for the u15 group assignment. It generalizes the disci
 
 ## Status
 
-Design phase complete, implementation not yet started. See `docs/plan.md` for the full plan, MVP scope, and stretch backlog.
+Implementation started. The app skeleton (TanStack Start + TypeScript, placeholder home page) is in this repo root and is set up to deploy to Vercel (`scripts/vercel-connect-deploy.sh` does the first-time connect + deploy). See `docs/plan.md` for the full plan, MVP scope, and stretch backlog.
 
 ## Stack
 
@@ -17,7 +17,30 @@ Design phase complete, implementation not yet started. See `docs/plan.md` for th
 
 ## Getting started
 
-_TODO once implementation begins: env vars, local dev setup, running migrations._
+Requires Node 24.
+
+```sh
+npm install
+npm run dev        # dev server on http://localhost:3000
+npm run typecheck  # tsc --noEmit
+npm test           # vitest
+npm run build      # production build (what Vercel runs)
+```
+
+### Deployment
+
+The app is a standard TanStack Start app, which Vercel auto-detects — no extra adapter config needed.
+
+**First-time project setup:** run `scripts/vercel-connect-deploy.sh`. It's a step-by-step wizard that logs in, links this repo to a Vercel project, connects the GitHub integration, and sets the Production Branch to `main` (see below — the repo's git default branch is `dev`, so this needs an explicit fix), then does a first `--prod` deploy to confirm everything works.
+
+**Day to day**, once linked:
+
+```sh
+npx vercel         # deploy a preview
+npx vercel --prod  # deploy to production
+```
+
+Per `docs/team-workflow.md` §5, production deploys come from `main`; `dev` and feature branches get previews.
 
 ## Reflection
 
