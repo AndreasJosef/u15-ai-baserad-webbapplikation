@@ -1,0 +1,528 @@
+<!--
+  PROTOTYPE — throwaway, not production code. Answers issue #7:
+  "What should the history view (listing past Interview sessions —
+  transcript + resulting Task Breakdown, per docs/plan.md §10) look
+  like and behave like?"
+
+  Plan: three radically different variants, switchable via ?variant=
+  (a/b/c), against mocked-up Session/transcript/Task Breakdown data
+  matching CONTEXT.md's vocabulary.
+
+  Assumption: this repo has no app scaffold yet (no routes, no task
+  runner), so there's no existing page or routing convention to embed
+  into (prototype/UI.md's sub-shape A doesn't apply, and sub-shape B's
+  "throwaway route under the project's convention" has no convention
+  to follow yet). This is instead a single static file, double-click
+  to open in a browser — no build step, no server. Once the real app
+  exists, the winning variant gets rebuilt as a real route/component.
+
+  Mock data lives in SESSIONS below — five sessions, one per Phase
+  edge case (Defining with no title yet, Drilling, Proposed but not
+  confirmed, and two Completed) — see CONTEXT.md for Phase/Session/
+  Task Breakdown definitions.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Prototype: History view (issue #7)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
+  .switcher-btn:active { transform: scale(0.94); }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
+</style>
+</head>
+<body class="bg-neutral-100 text-neutral-900 min-h-screen">
+
+<div class="bg-amber-50 border-b border-amber-200 text-amber-900 text-xs px-4 py-1.5 text-center">
+  🧪 Prototype — issue #7 "Design the history view" · not real data, nothing here is wired to a backend
+</div>
+
+<div id="app" class="pb-24"></div>
+
+<!-- ============================== DATA ============================== -->
+<script>
+const PRIORITY_STYLE = {
+  normal: 'bg-neutral-100 text-neutral-600',
+  medium: 'bg-blue-100 text-blue-700',
+  high: 'bg-orange-100 text-orange-700',
+  urgent: 'bg-red-100 text-red-700',
+};
+
+const PHASE_STYLE = {
+  Defining: 'bg-neutral-200 text-neutral-700',
+  Drilling: 'bg-blue-100 text-blue-700',
+  Proposed: 'bg-amber-100 text-amber-800',
+  Completed: 'bg-green-100 text-green-700',
+};
+
+const SESSIONS = [
+  {
+    id: 's1',
+    projectTitle: 'Garage Overhaul',
+    phase: 'Completed',
+    createdAt: 'Aug 20',
+    updatedAt: 'Aug 20',
+    summary: 'Clear out and reorganize the garage so the car actually fits again and tools have a real home.',
+    todoistProjectId: 'td_9f2c',
+    transcript: [
+      { role: 'assistant', text: "What's the vague idea you'd like to turn into a plan?" },
+      { role: 'user', text: 'I should sort out the garage, it\'s a disaster.' },
+      { role: 'assistant', text: 'What does "sorted out" look like when you\'re done — can you park the car in it, or is it more about finding things?' },
+      { role: 'user', text: 'Both honestly. Right now I can\'t park in there and I can never find my tools.' },
+      { role: 'assistant', text: 'Got it. Is this a one-weekend cleanout, or does it involve buying shelving/storage too?' },
+      { role: 'user', text: 'Probably need shelving. I have zero storage in there right now.' },
+      { role: 'assistant', text: 'Sounds like the project is: clear, sort, and shelve the garage so the car fits and tools are findable — let\'s break that into steps.' },
+      { role: 'assistant', text: 'First step — do you want to sort everything before buying shelving, or measure the space first?' },
+      { role: 'user', text: 'Measure first, I don\'t want to buy the wrong size shelves.' },
+      { role: 'assistant', text: 'Makes sense. Once shelving is in, do things get grouped by category (tools/sports/seasonal), or by how often you use them?' },
+      { role: 'user', text: 'By category, that\'s easier for me to remember.' },
+    ],
+    breakdown: {
+      projectTitle: 'Garage Overhaul',
+      tasks: [
+        { title: 'Measure garage wall space', priority: 'high', due: 'Aug 22' },
+        { title: 'Empty garage onto driveway', priority: 'high', due: 'Aug 23', description: 'Sort into keep / donate / trash piles while it\'s out.' },
+        { title: 'Buy shelving units', priority: 'medium', due: 'Aug 24' },
+        { title: 'Install shelving', priority: 'medium', due: 'Aug 25' },
+        { title: 'Group items by category on shelves', priority: 'normal', due: 'Aug 26', description: 'Tools, sports gear, seasonal decorations.' },
+        { title: 'Sweep and park the car in', priority: 'normal', due: 'Aug 26' },
+      ],
+    },
+  },
+  {
+    id: 's2',
+    projectTitle: 'Get Healthier',
+    phase: 'Proposed',
+    createdAt: 'Sep 2',
+    updatedAt: 'Sep 2',
+    summary: 'Build a sustainable routine around food, movement, and sleep — not a crash diet.',
+    todoistProjectId: null,
+    transcript: [
+      { role: 'assistant', text: "What's the vague idea you'd like to turn into a plan?" },
+      { role: 'user', text: 'I want to get healthier but every time I try I burn out in two weeks.' },
+      { role: 'assistant', text: 'What usually causes the burnout — is it the food side, the exercise side, or just too many changes at once?' },
+      { role: 'user', text: 'Too many changes at once, I try to overhaul everything on day one.' },
+      { role: 'assistant', text: 'Got it — so this is really about pacing. Should we pick one area to start with (food, movement, sleep), or a small change in each?' },
+      { role: 'user', text: 'A small change in each feels more sustainable to me.' },
+      { role: 'assistant', text: 'Sounds like the project is: build a sustainable routine with small, parallel changes to food, movement, and sleep — let\'s break that into steps.' },
+      { role: 'assistant', text: 'For movement — walking, a gym habit, or something else?' },
+      { role: 'user', text: 'Walking. I have a dog anyway, so it\'s free.' },
+      { role: 'assistant', text: 'For food, is the first change about what you eat, or when/how much?' },
+      { role: 'user', text: 'Cutting the late-night snacking is probably the biggest win.' },
+      { role: 'assistant', text: 'I\'ve put together a first breakdown for you — take a look and edit anything before I send it to Todoist.' },
+    ],
+    breakdown: {
+      projectTitle: 'Get Healthier',
+      tasks: [
+        { title: 'Walk the dog for 20 min every morning', priority: 'medium', due: 'daily' },
+        { title: 'Stop eating after 9pm', priority: 'medium', due: 'daily' },
+        { title: 'Set a consistent bedtime alarm', priority: 'normal', due: 'Sep 5' },
+        { title: 'Check in on progress after one week', priority: 'normal', due: 'Sep 9' },
+      ],
+    },
+  },
+  {
+    id: 's3',
+    projectTitle: "Mom's 60th Birthday Party",
+    phase: 'Drilling',
+    createdAt: 'Sep 3',
+    updatedAt: 'Sep 4',
+    summary: 'A surprise 60th birthday party for mom, at home, mid-October, roughly 20 guests.',
+    todoistProjectId: null,
+    transcript: [
+      { role: 'assistant', text: "What's the vague idea you'd like to turn into a plan?" },
+      { role: 'user', text: "I need to plan my mom's 60th birthday, it's in a few weeks." },
+      { role: 'assistant', text: 'Is this a surprise, and roughly how many people are you thinking?' },
+      { role: 'user', text: 'Yes, surprise. Maybe 20 people, at my place.' },
+      { role: 'assistant', text: 'Sounds like the project is: a surprise 60th birthday party for mom, at home, mid-October, ~20 guests — let\'s break that into steps.' },
+      { role: 'assistant', text: 'Since it\'s a surprise, how are you planning to get her there without tipping her off?' },
+      { role: 'user', text: 'My dad is going to take her out to dinner that evening and bring her back "late".' },
+      { role: 'assistant', text: 'Good cover. Do you have a guest list yet, or is that still to figure out?' },
+      { role: 'user', text: 'Still need to make the list with my dad and my sister.' },
+    ],
+    breakdown: null,
+  },
+  {
+    id: 's4',
+    projectTitle: null,
+    phase: 'Defining',
+    createdAt: 'Sep 4',
+    updatedAt: 'Sep 4',
+    summary: null,
+    todoistProjectId: null,
+    transcript: [
+      { role: 'assistant', text: "What's the vague idea you'd like to turn into a plan?" },
+      { role: 'user', text: 'I keep meaning to learn watercolor painting.' },
+      { role: 'assistant', text: 'Is this about picking it up as a total beginner, or getting back into it after a break?' },
+      { role: 'user', text: 'Total beginner, I\'ve never really painted before.' },
+    ],
+    breakdown: null,
+  },
+  {
+    id: 's5',
+    projectTitle: 'Declutter Closet',
+    phase: 'Completed',
+    createdAt: 'Aug 10',
+    updatedAt: 'Aug 10',
+    summary: 'Go through the bedroom closet, donate what\'s unworn, and set up a system so it stays tidy.',
+    todoistProjectId: 'td_8a01',
+    transcript: [
+      { role: 'assistant', text: "What's the vague idea you'd like to turn into a plan?" },
+      { role: 'user', text: 'My closet is bursting, I need to declutter it.' },
+      { role: 'assistant', text: 'Is the goal mainly to remove things, or also to organize what stays?' },
+      { role: 'user', text: 'Both — I want to donate the stuff I never wear and organize the rest.' },
+      { role: 'assistant', text: 'Sounds like the project is: declutter the closet, donate unworn items, and set up a system that keeps it tidy — let\'s break that into steps.' },
+      { role: 'user', text: 'Sounds right.' },
+    ],
+    breakdown: {
+      projectTitle: 'Declutter Closet',
+      tasks: [
+        { title: 'Pull everything out of the closet', priority: 'high', due: 'Aug 11' },
+        { title: 'Sort into keep / donate / trash', priority: 'high', due: 'Aug 11' },
+        { title: 'Drop donations at charity shop', priority: 'medium', due: 'Aug 13' },
+        { title: 'Set up a fold vs. hang system', priority: 'normal', due: 'Aug 14' },
+      ],
+    },
+  },
+];
+
+function fmtSessionLabel(s) {
+  if (s.projectTitle) return s.projectTitle;
+  const firstUserMsg = s.transcript.find(m => m.role === 'user');
+  const snippet = firstUserMsg ? firstUserMsg.text.slice(0, 40) + (firstUserMsg.text.length > 40 ? '…' : '') : 'New interview';
+  return `Not yet defined: "${snippet}"`;
+}
+
+function phaseBadge(phase) {
+  return `<span class="text-[11px] font-medium px-2 py-0.5 rounded-full ${PHASE_STYLE[phase]}">${phase}</span>`;
+}
+
+function priorityBadge(p) {
+  if (!p) return '';
+  return `<span class="text-[10px] font-medium px-1.5 py-0.5 rounded ${PRIORITY_STYLE[p]}">${p}</span>`;
+}
+
+function transcriptHtml(session, bubbleWidth = 'max-w-[85%]') {
+  return session.transcript.map(m => `
+    <div class="flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}">
+      <div class="${bubbleWidth} rounded-2xl px-3 py-2 text-sm ${m.role === 'user' ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-800'}">
+        ${m.text}
+      </div>
+    </div>
+  `).join('');
+}
+
+function breakdownHtml(session) {
+  if (!session.breakdown) {
+    return `<div class="text-sm text-neutral-500 italic py-6 text-center">No Task Breakdown yet — this Interview hasn't reached the Proposed phase.</div>`;
+  }
+  const rows = session.breakdown.tasks.map(t => `
+    <tr class="border-b border-neutral-100 last:border-0">
+      <td class="py-2 pr-3">
+        <div class="font-medium text-neutral-900">${t.title}</div>
+        ${t.description ? `<div class="text-xs text-neutral-500 mt-0.5">${t.description}</div>` : ''}
+      </td>
+      <td class="py-2 pr-3 whitespace-nowrap">${priorityBadge(t.priority)}</td>
+      <td class="py-2 whitespace-nowrap text-xs text-neutral-500">${t.due || '—'}</td>
+    </tr>
+  `).join('');
+  return `
+    <div class="mb-3 flex items-center justify-between">
+      <div class="text-sm font-semibold text-neutral-900">📁 ${session.breakdown.projectTitle}</div>
+      ${session.todoistProjectId
+        ? `<span class="text-xs text-green-700 bg-green-50 border border-green-200 rounded px-2 py-0.5">✓ Created in Todoist</span>`
+        : `<span class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-0.5">Awaiting confirmation</span>`}
+    </div>
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-xs text-neutral-400 uppercase tracking-wide">
+          <th class="pb-1 font-medium">Task</th>
+          <th class="pb-1 font-medium">Priority</th>
+          <th class="pb-1 font-medium">Due</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function taskCount(s) {
+  return s.breakdown ? s.breakdown.tasks.length : 0;
+}
+</script>
+
+<!-- ========================== VARIANT A: Accordion list ========================== -->
+<script>
+const VariantA = {
+  name: 'Accordion list',
+  state: { expanded: null, tab: {} },
+  render() {
+    const st = this.state;
+    return `
+      <div class="max-w-3xl mx-auto px-4 pt-8">
+        <h1 class="text-2xl font-semibold text-neutral-900 mb-1">History</h1>
+        <p class="text-sm text-neutral-500 mb-6">Every Interview you've had, most recent first. Tap one to read the transcript or its breakdown.</p>
+        <div class="space-y-2">
+          ${SESSIONS.map(s => this.row(s)).join('')}
+        </div>
+      </div>
+    `;
+  },
+  row(s) {
+    const st = this.state;
+    const isOpen = st.expanded === s.id;
+    const tab = st.tab[s.id] || (s.breakdown ? 'breakdown' : 'transcript');
+    return `
+      <div class="bg-white border border-neutral-200 rounded-xl overflow-hidden">
+        <button data-action="toggle" data-id="${s.id}" class="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-neutral-50">
+          <div class="min-w-0">
+            <div class="font-medium text-neutral-900 truncate">${fmtSessionLabel(s)}</div>
+            <div class="text-xs text-neutral-500 mt-0.5">${s.createdAt} · ${taskCount(s) ? taskCount(s) + ' tasks' : 'no breakdown yet'}</div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            ${phaseBadge(s.phase)}
+            <span class="text-neutral-400 text-sm transition-transform ${isOpen ? 'rotate-180' : ''}">▾</span>
+          </div>
+        </button>
+        ${isOpen ? `
+          <div class="border-t border-neutral-100 px-4 py-3">
+            ${s.summary ? `<div class="text-sm text-neutral-600 italic mb-3">"${s.summary}"</div>` : ''}
+            <div class="flex gap-1 mb-3 bg-neutral-100 p-0.5 rounded-lg w-fit text-sm">
+              <button data-action="tab" data-id="${s.id}" data-tab="transcript" class="px-3 py-1 rounded-md ${tab === 'transcript' ? 'bg-white shadow-sm font-medium' : 'text-neutral-500'}">Transcript</button>
+              <button data-action="tab" data-id="${s.id}" data-tab="breakdown" class="px-3 py-1 rounded-md ${tab === 'breakdown' ? 'bg-white shadow-sm font-medium' : 'text-neutral-500'}">Task Breakdown</button>
+            </div>
+            ${tab === 'transcript'
+              ? `<div class="space-y-2 max-h-72 overflow-y-auto pr-1">${transcriptHtml(s)}</div>`
+              : `<div>${breakdownHtml(s)}</div>`}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  },
+  onClick(e, rerender) {
+    const toggle = e.target.closest('[data-action="toggle"]');
+    const tabBtn = e.target.closest('[data-action="tab"]');
+    if (toggle) {
+      const id = toggle.dataset.id;
+      this.state.expanded = this.state.expanded === id ? null : id;
+      rerender();
+    } else if (tabBtn) {
+      this.state.tab[tabBtn.dataset.id] = tabBtn.dataset.tab;
+      rerender();
+    }
+  },
+};
+</script>
+
+<!-- ========================== VARIANT B: Master-detail split ========================== -->
+<script>
+const VariantB = {
+  name: 'Master-detail split',
+  state: { selected: SESSIONS[0].id },
+  render() {
+    const selected = SESSIONS.find(s => s.id === this.state.selected) || SESSIONS[0];
+    return `
+      <div class="max-w-6xl mx-auto flex h-[calc(100vh-104px)] mt-4 border border-neutral-200 rounded-xl overflow-hidden bg-white">
+        <div class="w-72 shrink-0 border-r border-neutral-200 overflow-y-auto">
+          <div class="px-4 py-3 border-b border-neutral-100 sticky top-0 bg-white">
+            <h1 class="font-semibold text-neutral-900">History</h1>
+          </div>
+          ${SESSIONS.map(s => `
+            <button data-action="select" data-id="${s.id}"
+              class="w-full text-left px-4 py-3 border-b border-neutral-100 hover:bg-neutral-50 ${s.id === selected.id ? 'bg-neutral-100' : ''}">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm font-medium text-neutral-900 truncate">${fmtSessionLabel(s)}</span>
+              </div>
+              <div class="flex items-center gap-2 mt-1">
+                ${phaseBadge(s.phase)}
+                <span class="text-xs text-neutral-400">${s.createdAt}</span>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <div class="px-6 py-4 border-b border-neutral-100">
+            <div class="flex items-center gap-2 mb-1">
+              <h2 class="text-lg font-semibold text-neutral-900">${fmtSessionLabel(selected)}</h2>
+              ${phaseBadge(selected.phase)}
+            </div>
+            <div class="text-xs text-neutral-400">Started ${selected.createdAt} · last updated ${selected.updatedAt}</div>
+            ${selected.summary ? `<div class="text-sm text-neutral-600 italic mt-2">"${selected.summary}"</div>` : ''}
+          </div>
+          <div class="flex-1 overflow-y-auto grid grid-cols-2 divide-x divide-neutral-100">
+            <div class="p-5 overflow-y-auto">
+              <div class="text-xs font-semibold text-neutral-400 uppercase tracking-wide mb-3">Transcript</div>
+              <div class="space-y-2">${transcriptHtml(selected, 'max-w-[90%]')}</div>
+            </div>
+            <div class="p-5 overflow-y-auto">
+              <div class="text-xs font-semibold text-neutral-400 uppercase tracking-wide mb-3">Task Breakdown</div>
+              ${breakdownHtml(selected)}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+  onClick(e, rerender) {
+    const btn = e.target.closest('[data-action="select"]');
+    if (btn) {
+      this.state.selected = btn.dataset.id;
+      rerender();
+    }
+  },
+};
+</script>
+
+<!-- ========================== VARIANT C: Kanban by phase + modal ========================== -->
+<script>
+const PHASES_ORDER = ['Defining', 'Drilling', 'Proposed', 'Completed'];
+
+const VariantC = {
+  name: 'Kanban by phase',
+  state: { modal: null, tab: 'transcript' },
+  render() {
+    const modalSession = SESSIONS.find(s => s.id === this.state.modal);
+    return `
+      <div class="max-w-6xl mx-auto px-4 pt-8">
+        <h1 class="text-2xl font-semibold text-neutral-900 mb-1">History</h1>
+        <p class="text-sm text-neutral-500 mb-6">Every Interview, grouped by where it's at. Click a card for the transcript and breakdown.</p>
+        <div class="grid grid-cols-4 gap-4">
+          ${PHASES_ORDER.map(phase => `
+            <div class="bg-neutral-50 rounded-xl p-3 min-h-[200px]">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-semibold text-neutral-700">${phase}</h3>
+                <span class="text-xs text-neutral-400">${SESSIONS.filter(s => s.phase === phase).length}</span>
+              </div>
+              <div class="space-y-2">
+                ${SESSIONS.filter(s => s.phase === phase).map(s => `
+                  <button data-action="open" data-id="${s.id}" class="w-full text-left bg-white border border-neutral-200 rounded-lg p-3 hover:shadow-md hover:border-neutral-300 transition">
+                    <div class="text-sm font-medium text-neutral-900 mb-1">${fmtSessionLabel(s)}</div>
+                    ${s.summary ? `<div class="text-xs text-neutral-500 line-clamp-2 mb-2">${s.summary}</div>` : ''}
+                    <div class="flex items-center justify-between text-xs text-neutral-400">
+                      <span>${s.createdAt}</span>
+                      <span>${taskCount(s) ? taskCount(s) + ' tasks' : '—'}</span>
+                    </div>
+                  </button>
+                `).join('') || `<div class="text-xs text-neutral-400 italic px-1">Nothing here</div>`}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      ${modalSession ? this.modal(modalSession) : ''}
+    `;
+  },
+  modal(s) {
+    const tab = this.state.tab;
+    return `
+      <div data-action="backdrop" class="fixed inset-0 bg-black/40 flex items-center justify-center p-6 z-40">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-xl">
+          <div class="px-5 py-4 border-b border-neutral-100 flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <h2 class="text-lg font-semibold text-neutral-900">${fmtSessionLabel(s)}</h2>
+                ${phaseBadge(s.phase)}
+              </div>
+              <div class="text-xs text-neutral-400">${s.createdAt}${s.summary ? ` · "${s.summary}"` : ''}</div>
+            </div>
+            <button data-action="close" class="text-neutral-400 hover:text-neutral-700 text-xl leading-none">×</button>
+          </div>
+          <div class="flex gap-1 px-5 pt-3 bg-neutral-100/60 border-b border-neutral-100">
+            <button data-action="tab" data-tab="transcript" class="px-3 py-1.5 text-sm rounded-t-md ${tab === 'transcript' ? 'bg-white font-medium border border-b-0 border-neutral-200' : 'text-neutral-500'}">Transcript</button>
+            <button data-action="tab" data-tab="breakdown" class="px-3 py-1.5 text-sm rounded-t-md ${tab === 'breakdown' ? 'bg-white font-medium border border-b-0 border-neutral-200' : 'text-neutral-500'}">Task Breakdown</button>
+          </div>
+          <div class="p-5 overflow-y-auto flex-1">
+            ${tab === 'transcript'
+              ? `<div class="space-y-2">${transcriptHtml(s)}</div>`
+              : breakdownHtml(s)}
+          </div>
+        </div>
+      </div>
+    `;
+  },
+  onClick(e, rerender) {
+    const open = e.target.closest('[data-action="open"]');
+    const close = e.target.closest('[data-action="close"]');
+    const backdrop = e.target.closest('[data-action="backdrop"]');
+    const tabBtn = e.target.closest('[data-action="tab"]');
+    if (open) {
+      this.state.modal = open.dataset.id;
+      this.state.tab = SESSIONS.find(s => s.id === open.dataset.id).breakdown ? 'breakdown' : 'transcript';
+      rerender();
+    } else if (close || (backdrop && e.target === backdrop)) {
+      this.state.modal = null;
+      rerender();
+    } else if (tabBtn) {
+      this.state.tab = tabBtn.dataset.tab;
+      rerender();
+    }
+  },
+};
+</script>
+
+<!-- ========================== Switcher + wiring ========================== -->
+<script>
+const VARIANTS = { a: VariantA, b: VariantB, c: VariantC };
+const ORDER = ['a', 'b', 'c'];
+
+function getVariantFromURL() {
+  const v = new URLSearchParams(location.search).get('variant');
+  return VARIANTS[v] ? v : 'a';
+}
+
+let current = getVariantFromURL();
+
+function rerender() {
+  const app = document.getElementById('app');
+  app.innerHTML = VARIANTS[current].render();
+}
+
+function setVariant(v) {
+  current = v;
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set('variant', v);
+    history.replaceState(null, '', url);
+  } catch (err) { /* file:// history API can be finicky in some browsers — non-fatal */ }
+  rerender();
+  updateSwitcherLabel();
+}
+
+function cycle(dir) {
+  const idx = ORDER.indexOf(current);
+  setVariant(ORDER[(idx + dir + ORDER.length) % ORDER.length]);
+}
+
+function updateSwitcherLabel() {
+  document.getElementById('switcher-label').textContent =
+    `${current.toUpperCase()} — ${VARIANTS[current].name}`;
+}
+
+document.getElementById('app').addEventListener('click', (e) => {
+  VARIANTS[current].onClick(e, rerender);
+});
+
+document.addEventListener('keydown', (e) => {
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable) return;
+  if (e.key === 'ArrowLeft') cycle(-1);
+  if (e.key === 'ArrowRight') cycle(1);
+});
+
+rerender();
+</script>
+
+<div class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-neutral-900 text-white rounded-full shadow-lg px-2 py-2">
+  <button onclick="cycle(-1)" class="switcher-btn w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">←</button>
+  <span id="switcher-label" class="text-sm font-medium px-1 min-w-[170px] text-center"></span>
+  <button onclick="cycle(1)" class="switcher-btn w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center">→</button>
+</div>
+
+<script>updateSwitcherLabel();</script>
+
+</body>
+</html>
