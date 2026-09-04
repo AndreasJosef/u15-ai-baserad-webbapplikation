@@ -61,3 +61,31 @@ For our expected volume (a few hundred sessions, each ~5–15k tokens plus a han
 - **Bun** — only supported with React 19+.
 
 **Rough edges:** No hard evidence of specific bugs found; the main practical risk is pre-1.0 API churn. Two docs-stated caveats: (1) the Nitro Vite plugin for non-Vercel deployment "is still under active development"; (2) cross-check code samples against the live `tanstack.com/start/latest` docs rather than older blog posts, since the RC has a fast release cadence.
+
+## 4. Supabase + Better Auth + TanStack Start integration notes
+
+Added during implementation (2026-09-04), once Better Auth and the Supabase connection were actually wired up — later than, and not part of, the 2026-08-30 planning pass above.
+
+### 4.1 Better Auth mounting & cookie-writing order
+
+**Bottom line:** Mount Better Auth as a catch-all TanStack Start server route, and put `tanstackStartCookies()` **last** in the Better Auth plugins list.
+
+- Better Auth's `auth.handler(request)` is wired to both `GET` and `POST` on a `/api/auth/$` catch-all route (`src/routes/api/auth/$.ts`), so every Better Auth endpoint (sign-up, sign-in, session, etc.) is reachable under `/api/auth/*`.
+- The `tanstackStartCookies()` plugin must be last in the plugins list — otherwise sign-in/sign-up cookies get written as a raw `Set-Cookie` header, which TanStack Start drops instead of writing through its own response-cookie machinery.
+- Read sessions server-side via `getRequestHeaders()` from `@tanstack/react-start/server`, not `request.headers` — the latter stopped working partway through TanStack Start's RC. Tracked upstream: better-auth/better-auth#6818.
+
+### 4.2 One linear migration history for Better Auth + app tables
+
+**Bottom line:** Generate Better Auth's tables once via `npx auth@latest generate`, then treat them as ordinary Drizzle schema from then on — never run `auth migrate` again.
+
+- `npx auth@latest generate` writes Better Auth's tables into `src/lib/server/db/schema/auth.ts`, left structurally untouched afterward.
+- That file is combined with the app's own tables (`schema/app.ts`) into one barrel (`schema/index.ts`), so both migrate through the same `drizzle-kit generate`/`migrate` history — one linear migration history instead of two competing migrators (per ADR-0001).
+- Never run `auth migrate` against this schema — it's a separate migrator that fights Drizzle Kit's own migration bookkeeping.
+
+### 4.3 Supabase's two connection strings are not interchangeable
+
+**Bottom line:** the running app connects through the transaction-mode pooler (port 6543, `prepare: false`); migrations run against the direct connection (port 5432) instead. Mixing them up, or grabbing the wrong one during initial setup, is the most likely real-world gotcha here.
+
+- **Transaction pooler** (`DATABASE_URL`, port 6543): what the running app (Better Auth's and Drizzle's Postgres clients) connects through. PgBouncer transaction mode doesn't support named prepared statements, so the Postgres client needs `prepare: false` (`src/lib/server/db/client.ts`).
+- **Direct connection** (`MIGRATION_DATABASE_URL`, port 5432): what `drizzle-kit generate`/`migrate` and `npx auth@latest generate` run against instead. Supports prepared statements, which migrations need.
+- **IPv4/IPv6 gotcha, confirmed 2026-09-04:** Supabase's direct-connection host (`db.<project>.supabase.co`) resolves to an AAAA (IPv6) record only — no A/IPv4 record. On a network with no outbound IPv6 route, `drizzle-kit migrate` fails with `ENETUNREACH`, and drizzle-kit swallows the underlying error (prints only a spinner, then exit code 1, no message). If this happens, swap `MIGRATION_DATABASE_URL` for Supabase's **Session pooler** connection string instead (Database settings → Connection string → Session pooler tab) — same IPv4-compatible reachability, and unlike the transaction pooler it still supports prepared statements. `scripts/supabase-setup.sh` already warns about this at the point where it asks for the direct connection string.
