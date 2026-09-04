@@ -10,5 +10,11 @@ export default defineConfig({
   // is Ditching Adapters"), so without it the client build still succeeds
   // but every route 404s on Vercel (x-vercel-error: NOT_FOUND) since there's
   // nothing for the platform to route requests to.
-  plugins: [tailwindcss(), tanstackStart(), nitro(), viteReact()],
+  //
+  // preset is pinned rather than left to autodetection: nitro's Vercel
+  // autodetect keys off a *local* .vercel/project.json (from `vercel link`),
+  // which is gitignored — so a clean checkout (CI, a fresh clone) silently
+  // falls back to the node-server preset and produces the same broken,
+  // no-server-function output that caused this bug in the first place.
+  plugins: [tailwindcss(), tanstackStart(), nitro({ preset: 'vercel' }), viteReact()],
 })

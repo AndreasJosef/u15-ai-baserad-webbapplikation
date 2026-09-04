@@ -44,19 +44,19 @@ jobs:
       - run: npm test
 
       # Guards against a repeat of the Sep 2026 incident: TanStack Start has
-      # no built-in deployment adapter, so without the nitro() plugin in
-      # vite.config.ts, `vite build` still succeeds but emits no server
-      # function — every route then 404s on Vercel (x-vercel-error:
-      # NOT_FOUND) with no error anywhere in the build log. VERCEL=1
-      # reproduces Vercel's own build env so nitro picks the same preset it
-      # would pick in production.
+      # no built-in deployment adapter, so without the nitro() plugin (with
+      # its Vercel preset pinned) in vite.config.ts, `vite build` still
+      # succeeds but emits no server function — every route then 404s on
+      # Vercel (x-vercel-error: NOT_FOUND) with no error anywhere in the
+      # build log. This runs the exact same `npm run build` CI already uses
+      # elsewhere, on a clean checkout, so it also catches the preset
+      # silently reverting to node-server if it's ever left to autodetect
+      # again (autodetection keys off a gitignored local .vercel/project.json
+      # that CI never has).
       - name: Verify Vercel build emits a server function
-        env:
-          VERCEL: '1'
-          VERCEL_ENV: preview
         run: |
           npm run build
           test -f .vercel/output/functions/__server.func/index.mjs || {
-            echo "::error::Build produced no .vercel/output/functions/__server.func/index.mjs — Vercel would 404 on every route. Check that nitro() is registered in vite.config.ts."
+            echo "::error::Build produced no .vercel/output/functions/__server.func/index.mjs — Vercel would 404 on every route. Check that nitro({ preset: 'vercel' }) is registered in vite.config.ts."
             exit 1
           }
