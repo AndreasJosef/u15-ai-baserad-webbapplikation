@@ -7,6 +7,30 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # A real (ephemeral) Postgres, not a mock — the Drizzle schema and its
+    # migration history are themselves part of what's under test (root
+    # spec's Testing Decisions).
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hone_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      # CI has no pooler, so both point at the one ephemeral instance —
+      # unlike Supabase, where migrations (direct, 5432) and the running
+      # app (transaction pooler, 6543) are deliberately different connections.
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/hone_test
+      MIGRATION_DATABASE_URL: postgres://postgres:postgres@localhost:5432/hone_test
+      BETTER_AUTH_SECRET: ci-only-secret-unused-outside-this-job
+      BETTER_AUTH_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v4
 
@@ -16,4 +40,5 @@ jobs:
 
       - run: npm ci
       - run: npm run typecheck
+      - run: npm run db:migrate
       - run: npm test
