@@ -6,7 +6,7 @@ An AI-based web app built for the u15 group assignment. It generalizes the disci
 
 ## Status
 
-Implementation started. The app skeleton (TanStack Start + TypeScript, placeholder home page) is in this repo root and deploys to Vercel. See `docs/plan.md` for the full plan, MVP scope, and stretch backlog.
+Implementation started. The app skeleton (TanStack Start + TypeScript, placeholder home page) is in this repo root and is set up to deploy to Vercel (`scripts/vercel-connect-deploy.sh` does the first-time connect + deploy). See `docs/plan.md` for the full plan, MVP scope, and stretch backlog.
 
 ## Stack
 
