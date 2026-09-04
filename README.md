@@ -30,6 +30,8 @@ npm run build      # production build (what Vercel runs)
 
 ### Database
 
+**First-time Supabase setup:** run `scripts/supabase-setup.sh`. It's a step-by-step wizard that walks you through creating the Supabase project, capturing the direct and pooler connection strings into `.env.local`, running the first migration, and (if `scripts/vercel-connect-deploy.sh` has already linked the repo) pushing those connection strings to Vercel's Production and Preview environments.
+
 Schema/migrations are Drizzle, covering both Better Auth's own tables and the app's own tables as one linear history (`docs/adr/0001-better-auth-over-supabase-auth.md`, issue #6/#8's resolutions):
 
 ```sh
