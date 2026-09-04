@@ -83,7 +83,7 @@ Concrete table layout (`interview_sessions`, `messages`, `tasks`, Better Auth's 
 - Interview: vague idea → checkpoint → task drilling → `propose_task_breakdown`.
 - Review/edit UI for the proposed breakdown.
 - Confirm → `create_todoist_tasks` → real tasks appear in the user's Todoist.
-- History view listing past sessions (transcript + resulting breakdown).
+- History view: a flat, chronological list of past Sessions (most recent first), each row showing its Phase badge, creation date, and task count; clicking a row expands it in place with a Transcript/Task Breakdown tab switch — no separate detail page or modal. Settled during issue #7's prototype (three variants tried: accordion list, master-detail split, kanban-by-phase); full variant set kept as a primary source on the unmerged `prototype/history-view` branch, not in this repo's mainline. See §13 for an open question this surfaced.
 - A deliberately well-crafted system prompt, not a generic chatbot wrapper.
 - **Error-handling bar**: no silent failures — the user always sees that something went wrong and can retry — but no retry/backoff logic, offline handling, or polished empty/error-state design. Keeps every ticket's effort consistent given the 8-day runway.
 
@@ -104,3 +104,4 @@ Concrete table layout (`interview_sessions`, `messages`, `tasks`, Better Auth's 
 - TanStack Start is RC, not 1.0 — expect possible minor API churn; pin versions and re-check docs against `tanstack.com/start/latest` if something behaves unexpectedly (see `docs/research.md`).
 - The README reflection answers are currently drafts based on this plan (see root `README.md`) — revisit them once the app is actually built, especially "why AI was needed" and "what would we have done differently," which should reflect real experience, not just the plan.
 - No app name has been chosen yet.
+- **Resumability of incomplete Interviews, undecided**: surfaced while prototyping the history view (issue #7). Sessions in the Defining/Drilling/Proposed Phases can appear in history alongside Completed ones, but whether the history view is read-only for those or also an entry point back into `/interview` to continue them is not yet decided — affects whether an Interview only ever happens in one sitting.
