@@ -21,11 +21,24 @@ Requires Node 24.
 
 ```sh
 npm install
+cp .env.example .env.local  # then fill in real values (a local Postgres works for dev/test)
 npm run dev        # dev server on http://localhost:3000
 npm run typecheck  # tsc --noEmit
-npm test           # vitest
+npm test           # vitest, against a real (test) Postgres — see .env.example
 npm run build      # production build (what Vercel runs)
 ```
+
+### Database
+
+Schema/migrations are Drizzle, covering both Better Auth's own tables and the app's own tables as one linear history (`docs/adr/0001-better-auth-over-supabase-auth.md`, issue #6/#8's resolutions):
+
+```sh
+npm run auth:generate  # regenerate src/lib/server/db/schema/auth.ts after changing src/lib/auth.ts
+npm run db:generate    # produce a new SQL migration from the schema files under src/lib/server/db/schema/
+npm run db:migrate     # apply pending migrations to MIGRATION_DATABASE_URL (Supabase's direct connection, port 5432)
+```
+
+The running app connects via `DATABASE_URL` (Supabase's transaction-mode pooler, port 6543, `prepare: false`); migrations run against `MIGRATION_DATABASE_URL` (the direct connection, port 5432) instead — mixing the two up is the most likely real-world gotcha here (`docs/research.md` §4.3).
 
 ### Deployment
 
