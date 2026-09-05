@@ -28,14 +28,20 @@ if (!message) {
   process.exit(0)
 }
 
-const response = await fetch(webhookUrl, {
+// `wait=true` makes Discord echo back the message it actually stored,
+// instead of a bare 204 — so a silently-wrong payload shows up in the
+// job log instead of looking identical to success (the exact failure
+// mode this workflow exists to replace).
+const response = await fetch(`${webhookUrl}?wait=true`, {
   method: 'POST',
   headers: { 'content-type': 'application/json' },
   body: JSON.stringify(message),
 })
 
+const responseBody = await response.text()
+
 if (!response.ok) {
-  throw new Error(`Discord webhook POST failed: ${response.status} ${response.statusText} — ${await response.text()}`)
+  throw new Error(`Discord webhook POST failed: ${response.status} ${response.statusText} — ${responseBody}`)
 }
 
-console.log('Posted Discord PR notification.')
+console.log(`Posted Discord PR notification: ${responseBody}`)
